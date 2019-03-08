@@ -1,7 +1,24 @@
 import fnv1a from "./fnv1a";
+import { PROPERTY_ERROR_PREFIX } from "./constants";
 
-interface Stringifiable {
+const DEFAULT_ARRAY_SIZE = 10000;
+const DEFAULT_NUM_HASHES = 4;
+
+export interface Stringifiable {
   toString: () => string;
+}
+
+type HashFunction = (value: string) => number;
+
+interface BloomFilterParameters {
+  size: number;
+  numHashes: number;
+}
+
+interface BloomFilterInputProperties extends Partial<BloomFilterParameters> {
+  falsePositiveRate?: number;
+  maxCapacity?: number;
+  hashFunction?: HashFunction;
 }
 
 /**
@@ -12,10 +29,64 @@ interface Stringifiable {
 export default class BloomFilter {
   private bitArray: boolean[];
   private numHashes: number;
+  private hashFunction: HashFunction;
 
-  constructor(size: number, numHashes: number) {
-    this.bitArray = new Array(size).fill(false);
+  constructor(props: BloomFilterInputProperties) {
+    const { size, numHashes } = this.checkProperties(props);
     this.numHashes = numHashes;
+    this.hashFunction = props.hashFunction || fnv1a;
+    this.bitArray = new Array(size).fill(false);
+  }
+
+  /**
+   * Validate the input properties and compute size and/or numHashes if needed.
+   * @param props The input properties given to the constructor
+   */
+  private checkProperties({
+    size,
+    numHashes,
+    falsePositiveRate,
+    maxCapacity
+  }: BloomFilterInputProperties): BloomFilterParameters {
+    // Validate the range of the input properties
+    if (size <= 0) {
+      throw new TypeError(`${PROPERTY_ERROR_PREFIX}: property \`size\` must be greater than 0`);
+    }
+    if (numHashes <= 0) {
+      throw new TypeError(`${PROPERTY_ERROR_PREFIX}: property \`numHashes\` must be greater than 0`);
+    }
+    if (falsePositiveRate <= 0 || falsePositiveRate > 1) {
+      throw new TypeError(
+        `${PROPERTY_ERROR_PREFIX}: property \`falsePositiveRate\` must be greater than 0 and less than 1`
+      );
+    }
+    if (maxCapacity <= 0) {
+      throw new TypeError(`${PROPERTY_ERROR_PREFIX}: property \`maxCapacity\` must be greater than 0`);
+    }
+
+    let sizeCalculated: number, numHashesCalculated: number;
+    if (size !== undefined && numHashes !== undefined) {
+      // Given size and numHashes, just use them
+      sizeCalculated = size;
+      numHashesCalculated = numHashes;
+    } else if (size !== undefined && maxCapacity !== undefined) {
+      // Given maxCapacity and size, calculate numHashes
+      sizeCalculated = size;
+      numHashesCalculated = this.calculateNumHashes(size, maxCapacity);
+    } else if (maxCapacity !== undefined && falsePositiveRate !== undefined) {
+      // Given maxCapacity and falsePositiveRate, calculate size and numHashes
+      sizeCalculated = this.calculateSize(maxCapacity, falsePositiveRate);
+      numHashesCalculated = this.calculateNumHashes(sizeCalculated, maxCapacity);
+    } else {
+      // Otherwise, use whatever is given and default for the rest
+      sizeCalculated = size || DEFAULT_ARRAY_SIZE;
+      numHashesCalculated = numHashes || DEFAULT_NUM_HASHES;
+    }
+    // Return the result
+    return {
+      size: sizeCalculated,
+      numHashes: numHashesCalculated
+    };
   }
 
   /**
@@ -41,6 +112,28 @@ export default class BloomFilter {
   }
 
   /**
+   * Calculate the optimal number of hashes given the size of the bit
+   * array and the expected maximum cardinality of the set.
+   * Formula from https://en.wikipedia.org/wiki/Bloom_filter#Probability_of_false_positives
+   * @param size The size of the bit array
+   * @param maxCapacity The expected maximum cardinality of the set
+   */
+  private calculateNumHashes(size: number, maxCapacity: number) {
+    return Math.round((size / maxCapacity) * Math.log(2));
+  }
+
+  /**
+   * Calculate the optimal size of the bit array given the expected maximum
+   * cardinality of the set and the highest acceptable false positive rate.
+   * Formula from https://en.wikipedia.org/wiki/Bloom_filter#Probability_of_false_positives
+   * @param maxCapacity The expected maximum cardinality of the set
+   * @param falsePositiveRate The highest acceptable false positive rate
+   */
+  private calculateSize(maxCapacity: number, falsePositiveRate: number) {
+    return Math.ceil((-maxCapacity * Math.log(falsePositiveRate)) / Math.log(2) ** 2);
+  }
+
+  /**
    * Given a value, compute the indices in the bit array that
    * the value maps to.
    * @param value The value for which to compute hashes
@@ -50,7 +143,7 @@ export default class BloomFilter {
     const stringified = this.stringify(value);
     const hashes = new Array(this.numHashes);
     for (let i = 0; i < this.numHashes; i++) {
-      hashes[i] = fnv1a(stringified + i) % this.bitArray.length;
+      hashes[i] = this.hashFunction(stringified + i) % this.bitArray.length;
     }
     return hashes;
   }
