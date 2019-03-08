@@ -1,7 +1,7 @@
 const OFFSET_BASIS_32 = 2166136261;
 
 /**
- * Compute the FNV-1a has of the given string.
+ * Compute the FNV-1a hash of the given string.
  * Code from https://github.com/sindresorhus/fnv1a, which did not have the
  * correct module configuration to be used as a dependency in an ES6 context.
  * @param string The string for which you want to compute the hash
