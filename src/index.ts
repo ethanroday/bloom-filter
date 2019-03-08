@@ -1,8 +1,5 @@
 import fnv1a from "./fnv1a";
-import { PROPERTY_ERROR_PREFIX } from "./constants";
-
-const DEFAULT_ARRAY_SIZE = 10000;
-const DEFAULT_NUM_HASHES = 4;
+import { PROPERTY_ERROR_PREFIX, DEFAULT_ARRAY_SIZE, DEFAULT_NUM_HASHES } from "./constants";
 
 export interface Stringifiable {
   toString: () => string;
@@ -109,6 +106,20 @@ export default class BloomFilter {
    */
   public check(value: Stringifiable) {
     return this.getHashes(value).every(index => this.bitArray[index]);
+  }
+
+  /**
+   * Return the size of the bit array.
+   */
+  public getSize() {
+    return this.bitArray.length;
+  }
+
+  /**
+   * Return the number of hash functions being used.
+   */
+  public getNumHashes() {
+    return this.numHashes;
   }
 
   /**
