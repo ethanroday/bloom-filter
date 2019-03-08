@@ -1,4 +1,4 @@
-import BloomFilter from ".";
+import BloomFilter from "./bloom-filter";
 import { DEFAULT_NUM_HASHES, DEFAULT_ARRAY_SIZE } from "./constants";
 
 describe("BloomFilter", () => {

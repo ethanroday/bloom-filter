@@ -1,22 +1,6 @@
 import fnv1a from "./fnv1a";
 import { PROPERTY_ERROR_PREFIX, DEFAULT_ARRAY_SIZE, DEFAULT_NUM_HASHES } from "./constants";
-
-export interface Stringifiable {
-  toString: () => string;
-}
-
-type HashFunction = (value: string) => number;
-
-interface BloomFilterParameters {
-  size: number;
-  numHashes: number;
-}
-
-interface BloomFilterInputProperties extends Partial<BloomFilterParameters> {
-  falsePositiveRate?: number;
-  maxCapacity?: number;
-  hashFunction?: HashFunction;
-}
+import { HashFunction, BloomFilterInputProperties, BloomFilterParameters, Stringifiable } from "./types";
 
 /**
  * A simple Bloom filter implementation in Typescript.
