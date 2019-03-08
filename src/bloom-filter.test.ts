@@ -11,6 +11,14 @@ describe("BloomFilter", () => {
     expect(filter.check(absent)).toEqual(false);
   });
 
+  it("should use the custom hash function if provided", () => {
+    const hashFunction = jest.fn().mockReturnValue(1);
+    const numHashes = 4;
+    const filter = new BloomFilter({ size: 10000, numHashes, hashFunction });
+    filter.add("abcdefgh");
+    expect(hashFunction).toHaveBeenCalledTimes(numHashes);
+  });
+
   describe("when performing input validation", () => {
     it("should validate the size property", () => {
       expect(() => new BloomFilter({ size: 0 })).toThrow();
@@ -58,6 +66,12 @@ describe("BloomFilter", () => {
       const expectedNumHashes = 4; // manually calculated
       expect(filter.getSize()).toEqual(expectedSize);
       expect(filter.getNumHashes()).toEqual(expectedNumHashes);
+    });
+
+    it("should use default values if given no information", () => {
+      const filter = new BloomFilter();
+      expect(filter.getSize()).toEqual(DEFAULT_ARRAY_SIZE);
+      expect(filter.getNumHashes()).toEqual(DEFAULT_NUM_HASHES);
     });
 
     it("should use default values if not given enough information", () => {

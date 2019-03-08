@@ -3,19 +3,26 @@ import { PROPERTY_ERROR_PREFIX, DEFAULT_ARRAY_SIZE, DEFAULT_NUM_HASHES } from ".
 import { HashFunction, BloomFilterInputProperties, BloomFilterParameters, Stringifiable } from "./types";
 
 /**
- * A simple Bloom filter implementation in Typescript.
- * @param size the desired size of the Bloom filter
- * @param numHashes the number of hash functions to use when adding and checking values
+ * A simple Bloom filter implementation in Typescript. Takes a configuration object with the following properties:
+ *   size: optionally, the desired size of the underlying bit array (commonly seen as m) (default 10000)
+ *   numHashes: optionally, the number of hash functions to use when adding and checking values (commonly seen as k) (default 4)
+ *   falsePositiveRate: optionally, the highest acceptable false positive rate when checking values (commonly seen as p)
+ *   maxCapacity: optionally, the maximum expected cardinality of the set (commonly seen as n)
+ *   hashFunction: optionally, a custom hash function used to hash the pre-salted values
+ * If size and numHashes are both given, they will be used, regardless of other property values.
+ * If maxCapacity and size are given, the optimal numHashes will be calculated.
+ * If maxCapacity and falsePositiveRate are given, size and numHashes will be calculated.
+ * Otherwise, if size and/or numHashes are given, they will be used, or else default values will be used.
  */
 export default class BloomFilter {
   private bitArray: boolean[];
   private numHashes: number;
   private hashFunction: HashFunction;
 
-  constructor(props: BloomFilterInputProperties) {
-    const { size, numHashes } = this.checkProperties(props);
+  constructor(props?: BloomFilterInputProperties) {
+    const { size, numHashes } = this.checkProperties(props || {});
     this.numHashes = numHashes;
-    this.hashFunction = props.hashFunction || fnv1a;
+    this.hashFunction = (props && props.hashFunction) || fnv1a;
     this.bitArray = new Array(size).fill(false);
   }
 
