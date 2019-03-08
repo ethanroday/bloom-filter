@@ -77,3 +77,4 @@ Given additional time, I would make the following enhancements:
 - Implement a resizable variant that stays within a given false positive tolerance
 - Add a build process to properly package this as a distributable module
 - Implement performance benchmarks
+- Verify correctness of current salting method
