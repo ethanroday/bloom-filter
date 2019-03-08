@@ -1,9 +1,27 @@
 # Bloom Filter
 
-A simple Bloom filter implementation in Typescript. Can be used as follows:
+A simple Bloom filter implementation in Typescript. To get started, clone the repo:
+
+```
+git clone https://github.com/ethanroday/bloom-filter
+```
+
+Then, install [Yarn](https://yarnpkg.com/) if necessary and run
+
+```
+yarn install
+```
+
+To run the test suite, run
+
+```
+yarn test
+```
+
+You can also use the code in another project by importing it directly. If this were a real-world scenario, it would be properly packaged and published on npm.
 
 ```typescript
-import BloomFilter from "bloom-filter";
+import BloomFilter from "./pathto/bloom-filter/src";
 
 const filter = new BloomFilter({
   size: 10000,            // the desired size of the underlying bit array (commonly seen as m)
@@ -21,7 +39,7 @@ The constructor accepts the following combinations of property values to maximiz
 - If `maxCapacity` and `falsePositiveRate` are given, `size` and `numHashes` will be calculated.
 - Otherwise, if `size` and/or `numHashes` are given, they will be used, or else default values will be used.
 
-It is also possible to pass no configuration object, in which case the defaults for `size` and `numHashes` are used:
+It is also possible to pass no properties object, in which case the defaults for `size` and `numHashes` are used:
 
 ```typescript
 const filter = new BloomFilter(); // size is 10000 and numHashes is 4
@@ -29,19 +47,19 @@ const filter = new BloomFilter(); // size is 10000 and numHashes is 4
 
 ## API
 
-### `add(value: Stringifiable): void`
+### `BloomFilter.add(value: Stringifiable): void`
 
 Add a value to the set.
 
-### `check(value: Stringifiable): boolean`
+### `BloomFilter.check(value: Stringifiable): boolean`
 
 Check the set for the given value. If `false`, the value is definitely _not_ in the set. If `true`, the value _may_ be in the set.
 
-### `getSize(): number`
+### `BloomFilter.getSize(): number`
 
-Get the sizeof the underlying bit array.
+Get the size of the underlying bit array.
 
-### `getNumHashes(): number`
+### `BloomFilter.getNumHashes(): number`
 
 Get the number of hash functions being used for adding and checking values.
 
