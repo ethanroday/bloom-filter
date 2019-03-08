@@ -252,6 +252,10 @@
     "@types/istanbul-lib-coverage" "^1.1.0"
     "@types/yargs" "^12.0.9"
 
+"@sindresorhus/fnv1a@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@sindresorhus/fnv1a/-/fnv1a-1.0.0.tgz#d419dd111b4d7fc3b87f97d86849bc23316149de"
+
 "@types/babel__core@^7.1.0":
   version "7.1.0"
   resolved "https://registry.yarnpkg.com/@types/babel__core/-/babel__core-7.1.0.tgz#710f2487dda4dcfd010ca6abb2b4dc7394365c51"
@@ -281,6 +285,10 @@
   dependencies:
     "@babel/types" "^7.3.0"
 
+"@types/bit-array@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@types/bit-array/-/bit-array-0.2.1.tgz#98246b01cbe82280f74a2d40cb38a610caab1127"
+
 "@types/istanbul-lib-coverage@^1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@types/istanbul-lib-coverage/-/istanbul-lib-coverage-1.1.0.tgz#2cc2ca41051498382b43157c8227fea60363f94a"
@@ -298,6 +306,10 @@
 "@types/node@*":
   version "11.10.5"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-11.10.5.tgz#fbaca34086bdc118011e1f05c47688d432f2d571"
+
+"@types/sindresorhus__fnv1a@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@types/sindresorhus__fnv1a/-/sindresorhus__fnv1a-1.0.0.tgz#7588dbc4610116083fd6a4da792323e6c34ffcbd"
 
 "@types/stack-utils@^1.0.1":
   version "1.0.1"
@@ -514,6 +526,10 @@ bcrypt-pbkdf@^1.0.0:
   resolved "https://registry.yarnpkg.com/bcrypt-pbkdf/-/bcrypt-pbkdf-1.0.2.tgz#a4301d389b6a43f9b67ff3ca11a3f6637e360e9e"
   dependencies:
     tweetnacl "^0.14.3"
+
+bit-array@^0.2.2:
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/bit-array/-/bit-array-0.2.2.tgz#6a7956e4e7fb57d4f1e74825cd4a9828694b2753"
 
 brace-expansion@^1.1.7:
   version "1.1.11"

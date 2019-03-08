@@ -1,4 +1,5 @@
-import fnv1a from "./fnv1a";
+import fnv1a = require("@sindresorhus/fnv1a");
+import BitArray = require("bit-array");
 import { PROPERTY_ERROR_PREFIX, DEFAULT_ARRAY_SIZE, DEFAULT_NUM_HASHES } from "./constants";
 import { HashFunction, BloomFilterInputProperties, BloomFilterParameters, Stringifiable } from "./types";
 
@@ -15,7 +16,7 @@ import { HashFunction, BloomFilterInputProperties, BloomFilterParameters, String
  * Otherwise, if size and/or numHashes are given, they will be used, or else default values will be used.
  */
 export default class BloomFilter {
-  private bitArray: boolean[];
+  private bitArray: BitArray;
   private numHashes: number;
   private hashFunction: HashFunction;
 
@@ -23,7 +24,7 @@ export default class BloomFilter {
     const { size, numHashes } = this.checkProperties(props || {});
     this.numHashes = numHashes;
     this.hashFunction = (props && props.hashFunction) || fnv1a;
-    this.bitArray = new Array(size).fill(false);
+    this.bitArray = new BitArray(size);
   }
 
   /**
@@ -85,7 +86,7 @@ export default class BloomFilter {
    */
   public add(value: Stringifiable) {
     this.getHashes(value).forEach(index => {
-      this.bitArray[index] = true;
+      this.bitArray.set(index, true);
     });
   }
 
@@ -96,14 +97,14 @@ export default class BloomFilter {
    * in the set and true if it *might* be in the set.
    */
   public check(value: Stringifiable) {
-    return this.getHashes(value).every(index => this.bitArray[index]);
+    return this.getHashes(value).every(index => this.bitArray.get(index));
   }
 
   /**
    * Return the size of the bit array.
    */
   public getSize() {
-    return this.bitArray.length;
+    return this.bitArray.size();
   }
 
   /**
@@ -145,7 +146,7 @@ export default class BloomFilter {
     const stringified = this.stringify(value);
     const hashes = new Array(this.numHashes);
     for (let i = 0; i < this.numHashes; i++) {
-      hashes[i] = this.hashFunction(stringified + i) % this.bitArray.length;
+      hashes[i] = this.hashFunction(stringified + i) % this.bitArray.size();
     }
     return hashes;
   }
